@@ -32,5 +32,7 @@ dist-ssr
 /infrastructure/pgsql-16/data
 /infrastructure/nginx-php/docker/config
 /resources/database/*
+resources/docs/webapp/project/*
+!resources/docs/webapp/project/.gitignore
 /Makefile
 /jenkis-*
