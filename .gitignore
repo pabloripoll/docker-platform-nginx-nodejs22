@@ -32,5 +32,5 @@ resources/database/*
 !resources/database/.gitignore
 resources/docs/webapp/project/*
 !resources/docs/webapp/project/.gitignore
-apirest/*
-!apirest/.gitignore
+webapp/*
+!webapp/.gitignore
