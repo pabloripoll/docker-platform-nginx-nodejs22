@@ -27,12 +27,10 @@ dist
 dist-ssr
 *.local
 
-/apirest/*
-/vault
-/infrastructure/pgsql-16/data
-/infrastructure/nginx-php/docker/config
-/resources/database/*
+vault
+resources/database/*
+!resources/database/.gitignore
 resources/docs/webapp/project/*
 !resources/docs/webapp/project/.gitignore
-/Makefile
-/jenkis-*
+apirest/*
+!apirest/.gitignore
