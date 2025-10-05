@@ -61,6 +61,9 @@ RUN npm install -g yarn --force
 RUN npm -v
 RUN yarn -v
 
+# NPM packages installation into the prefix folder instead of the current working directory
+RUN npm config set prefix
+
 # Create project root and set it as work directory
 RUN mkdir -p /var/www
 WORKDIR /var/www
@@ -77,8 +80,15 @@ RUN chown -R ${USER}:${GROUP} /var/www /run /var/lib/nginx /var/log/nginx
 # Switch to use a non-root user from here on
 USER ${USER}
 
-# Container ports
-EXPOSE 80 443 3000
+# Make NPM accessible for current user
+RUN mkdir ~/.npm-global
+RUN npm config set prefix '~/.npm-global'
+RUN export PATH=~/.npm-global/bin:$PATH
+RUN touch ~/.profile
+RUN source ~/.profile
+
+# Container ports for static, SSL, preview / dev and server-site rendering
+EXPOSE 80 443 3000 8080
 
 # Let supervisord start nginx & php-fpm
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
