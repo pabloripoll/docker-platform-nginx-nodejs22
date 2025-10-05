@@ -47,8 +47,8 @@ help: ## shows this Makefile help message
 
 local-hostname: ## shows local machine ip and container ports set
 	echo "Container Address:"
-	echo ${C_BLU}"LOCAL: "${C_END}"$(word 1,$(shell hostname -I))"
-	echo ${C_BLU}"APIREST: "${C_END}"$(word 1,$(shell hostname -I)):"$(WEBAPP_PORT)
+	echo ${C_BLU}"LOCAL IP: "${C_END}"$(word 1,$(shell hostname -I))"
+	echo ${C_BLU}"WEBAPP: "${C_END}"$(word 1,$(shell hostname -I)):"$(WEBAPP_PORT)
 
 user ?= ${USER}
 group ?= root
