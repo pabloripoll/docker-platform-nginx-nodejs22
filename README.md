@@ -20,6 +20,7 @@ Additionally, the platform can be run locally with multiple instances to support
 - [Container Environment Settings](#setup-containers)
 - [Create Docker Container](#create-containers)
 - [GNU Make file recipes](#make-help)
+- [Use platform with existing repository](#external-repository)
 <br><br>
 
 ## <a id="requirements"></a>Requirements
@@ -166,6 +167,38 @@ This streamlines the workflow for managing the container with mnemonic recipe na
 <div style="with:100%;height:auto;text-align:center;">
     <img src="./resources/docs/images/make-help.jpg">
 </div>
+<br>
+
+## <a id="external-repository"></a>Use platform with existing repository
+
+Remove the ./webapp directory with the default installation content from from local and git cache.
+
+Install a working repository into webapp directory. There are two alternatives to manage both platform and webapp repository independetely
+
+### Web application as git sub-module
+
+With this method, developers can only commit changes from inside the container, and push them into remote version control service. The container must have the keys to access and modify remote repository.
+```bash
+$ git rm -r ./webapp
+$ git clean -fd
+$ git reset --hard
+$ rm -rfv ./webapp/*
+$ rm -rfv ./webapp/.*
+$ git add sub-module git@[vcs]:[account]/[repository].git ./webapp
+```
+
+### Web application as detached repository *(recommended)*
+
+The advantage of this method is that developers can commit changes from inside and outside the container, and push them into remote version control service.
+```bash
+$ git rm -r ./webapp
+$ git clean -fd
+$ git reset --hard
+$ rm -rfv ./webapp/*
+$ rm -rfv ./webapp/.*
+$ cd ./webapp
+$ git clone git@[vcs]:[account]/[repository].git .
+```
 
 <!-- FOOTER -->
 <br>
