@@ -4,7 +4,7 @@
 
 # INFRASTRUCTURE PLATFORM
 
-# NGINX 1.28, NodeJS 22.16
+# NGINX 1.28, NODEJS 22.16
 
 This Infrastructure Platform repository provides a dedicated stack with Node.js for front-end projects, enabling developers to work within a consistent local development framework that closely mirrors real-world deployment scenarios. Whether your application will run on AWS EC2, Google Cloud GCE instances, or be distributed across Kubernetes pods, this structure ensures smooth transitions between environments.
 
