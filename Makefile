@@ -105,44 +105,6 @@ webapp-destroy: ## destroys completly the apirest container
 	fi
 
 # -------------------------------------------------------------------------------------------------
-#  Backend REST API Tests
-# -------------------------------------------------------------------------------------------------
-.PHONY: webapp-test-up webapp-test-down webapp-test-full test-qa-full
-
-webapp-test-up: ## creates a side database for tests, executes migrations and default seeders, and optionally access the apirest container
-	$(DOCKER) exec -it $(DATABASE_CONTAINER) sh -c 'dropdb -f $(DATABASE_NAME)_testing -U "$(DATABASE_USER)"; createdb $(DATABASE_NAME)_testing -U "$(DATABASE_USER)"';
-	$(DOCKER) exec -it $(WEBAPP_CONTAINER) sh -c 'echo "Testing:"; \
-php artisan config:clear; \
-php artisan cache:clear; \
-php artisan route:clear; \
-composer dump-autoload; \
-php artisan --env=testing migrate; \
-php artisan --env=testing db:seed --class=TestBaseSeeder;';
-	echo ${C_YEL}"$(PROJECT_NAME) TESTING DATABASE"${C_END}" inside container "${C_YEL}"$(DATABASE_CONTAINER)"${C_END}" has been created."
-	@echo -n ${C_YEL}"Do you want to enter into the container to perform tests? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
-        echo ${C_GRN}"OK!"${C_END}" Remember to drop testing database outside container: "${C_BLU}"$$ make webapp-test-down"${C_END}; \
-    else \
-		$(MAKE) webapp-ssh; \
-	fi
-
-webapp-test-down: ## drops the side database for testing
-	$(DOCKER) exec -it $(DATABASE_CONTAINER) sh -c 'dropdb -f $(DATABASE_NAME)_testing -U "$(DATABASE_USER)"';
-	echo ${C_YEL}"$(PROJECT_NAME) TESTING DATABASE"${C_END}" inside container "${C_YEL}"$(DATABASE_CONTAINER)"${C_END}" has been deleted."
-
-webapp-test-full: ## creates a side database for testing, executes full tests and drops the side database
-	$(DOCKER) exec -it $(DATABASE_CONTAINER) sh -c 'dropdb -f $(DATABASE_NAME)_testing -U "$(DATABASE_USER)"; createdb $(DATABASE_NAME)_testing -U "$(DATABASE_USER)"';
-	echo ${C_YEL}"$(PROJECT_NAME) TESTING DATABASE"${C_END}" inside container "${C_YEL}"$(DATABASE_CONTAINER)"${C_END}" has been created."
-	$(DOCKER) exec -it $(WEBAPP_CONTAINER) sh -c 'echo "Testing:"; \
-php artisan config:clear; \
-php artisan cache:clear; \
-php artisan route:clear; \
-composer dump-autoload; \
-php artisan --env=testing migrate; \
-php artisan --env=testing db:seed --class=TestBaseSeeder; \
-php artisan test --bail --profile;';
-	echo ${C_YEL}"$(PROJECT_NAME) TESTING DATABASE"${C_END}" inside container "${C_YEL}"$(DATABASE_CONTAINER)"${C_END}" has persisted data until next testing execution."
-
-# -------------------------------------------------------------------------------------------------
 #  Repository Helper
 # -------------------------------------------------------------------------------------------------
 .PHONY: repo-flush repo-commit
