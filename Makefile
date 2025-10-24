@@ -88,6 +88,9 @@ webapp-start: ## starts the webapp container running
 webapp-stop: ## stops the webapp container but its assets will not be destroyed
 	cd platform/$(WEBAPP_PLTF) && $(MAKE) stop
 
+webapp-restart: ## restarts the running webapp container
+	cd platform/$(WEBAPP_PLTF) && $(MAKE) restart
+
 webapp-destroy: ## destroys completly the webapp container
 	echo ${C_RED}"Attention!"${C_END};
 	echo ${C_YEL}"You're about to remove the "${C_BLU}"$(WEBAPP_PROJECT)"${C_END}" container and delete its image resource."${C_END};
