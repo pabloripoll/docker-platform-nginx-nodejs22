@@ -6,11 +6,17 @@
 
 # NGINX 1.28, NODEJS 22.16
 
-This Infrastructure Platform repository provides a dedicated stack with Node.js for front-end projects, enabling developers to work within a consistent local development framework that closely mirrors real-world deployment scenarios. Whether your application will run on AWS EC2, Google Cloud GCE instances, or be distributed across Kubernetes pods, this structure ensures smooth transitions between environments.
+## Repository Overview
 
-A key feature of this repository is its modular design: it is intentionally decoupled from its sub-directory ./webapp, allowing the platform to be maintained independently without impacting the associated subproject. This separation supports dedicated upkeep and flexibility for both the platform and its attached web applications.
+This Infrastructure Platform repository provides a dedicated Node.js stack for front-end projects, enabling developers to work within a consistent local development framework that closely mirrors real-world deployment scenarios. Whether your application will run on **AWS EC2**, **Google Cloud GCE**, **Azure** instances, **VPS** or be distributed across **Kubernetes pods**, this structure ensures smooth transitions between environments.
 
-Additionally, the platform can be run locally with multiple instances to support different development stages of various ./webapp projects simultaneously. It is easily configurable to suit different infrastructure or machine requirements—developers can adjust settings such as container RAM usage, ports, and other platform parameters to best fit their environment.
+### Modular and Decoupled Design
+
+A key feature of this repository is its modular design: it is intentionally decoupled from its sub-directory `./webapp`, allowing the platform to be maintained independently without impacting the associated subproject. This separation supports dedicated upkeep and flexibility for both the platform and its detached web application.
+
+### Multi-instance Local Development
+
+Additionally, the platform is designed to support running multiple development versions of the ./webapp simultaneously, simply by adjusting a few environment settings to differentiate each container instance. It is highly configurable to accommodate various infrastructure or machine requirements, allowing developers to easily tailor parameters such as container RAM allocation, port assignments, and other platform settings to best fit their local or deployment environment.
 <br>
 
 ## Content of this page:
@@ -20,7 +26,7 @@ Additionally, the platform can be run locally with multiple instances to support
 - [Container Environment Settings](#setup-containers)
 - [Build and run the Web Application Container](#create-containers)
 - [GNU Make file recipes](#make-help)
-- [Use this Platform Repository with an existing web application repository](#external-repository)
+- [Use this Platform Repository for your Web Application Project](#platform-usage)
 <br><br>
 
 ## <a id="requirements"></a>Requirements
@@ -31,7 +37,7 @@ Despite Docker’s cross-platform compatibility, for intermediate to advanced so
 - **Docker Compose**: Manages multi-container setups and dependencies.
 - **GNU Make**: Automates build commands and workflows *(otherwise, commands must be executed manually)*.
 
-If you don't use GNU Make, execute commands inside `./platform/nginx-nodejs/docker/` directory by setting an `./platform/nginx-nodejs/docker/.env` file from `./platform/nginx-nodejs/docker/.env.example`.
+If you won't use GNU Make, Docker commands will have to be executed from within the `./platform/nginx-nodejs/docker` directory.
 
 | Dev machine   | Machine's features                                                                            |
 | ------------- | --------------------------------------------------------------------------------------------- |
@@ -52,7 +58,13 @@ It can be installed the most known JS **front-end** frameworks:
 <br>
 
 Take into account that each framework will demand its specific configuration from inside container.
-<br>
+<br><br>
+
+## <a id="setup-containers"></a>Container Environment Settings
+
+The container instance has its dedicated GNU Make and the core Docker directory which contains the scripts and stack assets to build the required platform configuration.
+
+Also, there is a copy at `./resources/docs/platform/` directory to contain the exact or the alternated scripts, so you can save or backup the different SDLC required configuration *(e.g. Testing, Staging, Production)*.
 
 **Stack:**
 - Linux Alpine version 3.22
@@ -60,11 +72,7 @@ Take into account that each framework will demand its specific configuration fro
 - NodeJS 22.16 with NPM and YARN installed
 <br><br>
 
-## <a id="setup-containers"></a>Container Environment Settings
-
-Inside `./platform/nginx-nodejs` there are a dedicated GNU Make file and the main Docker directory with the required scripts and stack assets in the `./platform/nginx-nodejs/docker/config` directory to build the required platform configuration. Otherwise, it is not required to create its `.env` manually file for building the container.
-
-> **Note**: There is a `.env.example` file with the variables required to build the container by `docker-compose.yml` file to create the container if no GNU Make is available on developer's machine. Otherwise, it is not required to create its `.env` manually file for building the container. web app environment: `./platform/nginx-nodejs/docker/.env`
+> **Note**: There is a `./platform/nginx-nodejs/docker/.env.example` file with the variables required to build the container by `docker-compose.yml` file to create the container if no GNU Make is available on developer's machine. Otherwise, it is not required to create its `.env` manually file for building the container. web app environment: `./platform/nginx-nodejs/docker/.env`
 
 ```bash
 COMPOSE_PROJECT_LEAD="myproj"
@@ -204,11 +212,43 @@ This streamlines the workflow for managing the container with mnemonic recipe na
 </div>
 <br>
 
-## <a id="external-repository"></a>Use this Platform Repository with an existing web application repository
+## <a id="platform-usage"></a>Use this Platform Repository for your Web Application Project
 
-Here’s a step-by-step guide for both alternatives, assuming you want to:
+Clone the platforms repository
+```bash
+$ git clone https://github.com/pabloripoll/docker-platform-nginx-nodejs-22
+$ cd docker-platform-nginx-nodejs-22
+```
 
-- Remove the existing `./webapp` directory and its contents from local and git cache
+Repository directories structure overview:
+```
+.
+├── webapp (Vue, Angular, Reat, Svelte, etc.)
+│   ├── node_modules
+│   ├── index.js
+│   ├── package.json
+│   └── ...
+│
+├── platform
+│   └── nginx-nodejs
+│       ├── docker
+│       │   │   ├── nginx
+│       │   │   └── supervisord
+│       │   ├── config
+│       │   ├── .env
+│       │   ├── docker-compose.yml
+│       │   └── Dockerfile
+│       │
+│       └── Makefile
+├── .env
+├── Makefile
+└── README.md
+```
+<br>
+
+Here’s a step-by-step guide for using this Platform repository along with your own web application:
+
+- Remove the existing `./webapp` directory contents from local and from git cache
 - Install your desired repository inside `./webapp`
 - Choose between Git submodule and detached repository approaches
 <br>
@@ -278,7 +318,41 @@ To remove the `./webapp` directory with the default installation content and ins
 
 ---
 
-> After switching to either alternative, consider adding `webapp/` to your `.gitignore` in the main repo to prevent accidental tracking (especially for detached repo).
+Once the container is up, Supervisor will run the sample web application script. See `./platform/nginx-nodejs/docker/config/supervisor/conf.d/nodejs.conf`
+```bash
+[program:nodejs]
+command=node --watch /var/www/index.js
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+autorestart=false
+startretries=0
+```
+
+> **Note**: If web application main script is other, remember to modify this file.
+
+> After switching to either alternative, consider adding `/webapp` to your `.gitignore` in this main platform repository to prevent accidental tracking *(especially for detached repository)*.
+
+<br>
+
+---
+
+## Contributing
+
+Contributions are very welcome! Please open issues or submit PRs for improvements, new features, or bug fixes.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -am 'feat: Add new feature'`)
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Create a new Pull Request
+
+---
+
+## License
+
+This project is open-sourced under the [MIT license](LICENSE).
 
 <!-- FOOTER -->
 <br>
