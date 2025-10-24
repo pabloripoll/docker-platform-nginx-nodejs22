@@ -137,8 +137,8 @@ start: ## starts the container and put on running
 stop: ## stops the running container but data won't be destroyed
 	cd docker && $(DOCKER_COMPOSE) stop
 
-restart: ## execute this Makefile "stop" & "start" recipes
-	cd docker && $(DOCKER) $(DOCKER_CONTAINER) restart
+restart: ## restarts the running container
+	cd docker && $(DOCKER) restart $(DOCKER_CONTAINER)
 
 clear: ## removes container from Docker running containers
 	cd docker && $(DOCKER_COMPOSE) kill || true
