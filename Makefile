@@ -63,32 +63,32 @@ local-ownership-set: ## sets recursively local root directory ownership
 # -------------------------------------------------------------------------------------------------
 .PHONY: webapp-hostcheck webapp-info webapp-set webapp-create webapp-network webapp-ssh webapp-start webapp-stop webapp-destroy
 
-webapp-hostcheck: ## shows this project ports availability on local machine for apirest container
+webapp-hostcheck: ## shows this project ports availability on local machine for webapp container
 	cd platform/$(WEBAPP_PLTF) && $(MAKE) port-check
 
-webapp-info: ## shows the apirest docker related information
+webapp-info: ## shows the webapp docker related information
 	cd platform/$(WEBAPP_PLTF) && $(MAKE) info
 
-webapp-set: ## sets the apirest enviroment file to build the container
+webapp-set: ## sets the webapp enviroment file to build the container
 	cd platform/$(WEBAPP_PLTF) && $(MAKE) env-set
 
-webapp-create: ## creates the apirest container from Docker image
+webapp-create: ## creates the webapp container from Docker image
 	cd platform/$(WEBAPP_PLTF) && $(MAKE) build up
 
-webapp-network: ## creates the apirest container network - execute this recipe first before others
+webapp-network: ## creates the webapp container network - execute this recipe first before others
 	$(MAKE) webapp-stop
 	cd platform/$(WEBAPP_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
 
-webapp-ssh: ## enters the apirest container shell
+webapp-ssh: ## enters the webapp container shell
 	cd platform/$(WEBAPP_PLTF) && $(MAKE) ssh
 
-webapp-start: ## starts the apirest container running
+webapp-start: ## starts the webapp container running
 	cd platform/$(WEBAPP_PLTF) && $(MAKE) start
 
-webapp-stop: ## stops the apirest container but its assets will not be destroyed
+webapp-stop: ## stops the webapp container but its assets will not be destroyed
 	cd platform/$(WEBAPP_PLTF) && $(MAKE) stop
 
-webapp-destroy: ## destroys completly the apirest container
+webapp-destroy: ## destroys completly the webapp container
 	echo ${C_RED}"Attention!"${C_END};
 	echo ${C_YEL}"You're about to remove the "${C_BLU}"$(WEBAPP_PROJECT)"${C_END}" container and delete its image resource."${C_END};
 	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
