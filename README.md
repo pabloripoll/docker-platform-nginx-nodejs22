@@ -20,16 +20,18 @@ Additionally, the platform can be run locally with multiple instances to support
 - [Container Environment Settings](#setup-containers)
 - [Create Docker Container](#create-containers)
 - [GNU Make file recipes](#make-help)
-- [Use platform with existing repository](#external-repository)
+- [Use this Platform Repository with an existing web application repository](#external-repository)
 <br><br>
 
 ## <a id="requirements"></a>Requirements
 
 Despite Docker’s cross-platform compatibility, for intermediate to advanced software development on environments other than Windows NT or macOS, automating the platform build and streamlining the process of starting feature development is crucial. This automation enables a more dynamic and efficient software development lifecycle.
 
-- Docker
-- Docker Compose
-- GNU Make *(otherwise commands must be executed manually)*
+- **Docker**: Containerizes applications for consistent environments.
+- **Docker Compose**: Manages multi-container setups and dependencies.
+- **GNU Make**: Automates build commands and workflows *(otherwise, commands must be executed manually)*.
+
+If you don't use GNU Make, execute commands inside `./platform/nginx-nodejs/docker/` directory by setting an `./platform/nginx-nodejs/docker/.env` file from `./platform/nginx-nodejs/docker/.env.example`.
 
 | Dev machine   | Machine's features                                                                            |
 | ------------- | --------------------------------------------------------------------------------------------- |
@@ -49,21 +51,20 @@ It can be installed the most known JS **front-end** frameworks:
 <br>
 
 Take into account that each framework will demand its specific configuration from inside container.
+<br>
+
+**Stack:**
+- Linux Alpine version 3.22
+- NGINX version 1.28 *(or the latest on Alpine Package Keeper)*
+- NodeJS 22.16 with NPM and YARN installed
 <br><br>
 
 ## <a id="setup-containers"></a>Container Environment Settings
 
-Inside `./platform/nginx-nodejs` there are a dedicated GNU Make file and the main Docker directory with the required scripts and stack assets in the `./platform/nginx-nodejs/docker/config` directory to build the required platform configuration. Also, there is a `config.sample` with alternate configuration files suggestions.
+Inside `./platform/nginx-nodejs` there are a dedicated GNU Make file and the main Docker directory with the required scripts and stack assets in the `./platform/nginx-nodejs/docker/config` directory to build the required platform configuration. Otherwise, it is not required to create its `.env` manually file for building the container.
 
-Platform Stack:
-- Linux Alpine version 3.22
-- NGINX version 1.28 *(or the latest on Alpine Package Keeper)*
-- NodeJS 22.16 with NPM and YARN installed
-<br>
+> **Note**: There is a `.env.example` file with the variables required to build the container by `docker-compose.yml` file to create the container if no GNU Make is available on developer's machine. Otherwise, it is not required to create its `.env` manually file for building the container. API environment: `./platform/nginx-nodejs/docker/.env`
 
-<font color="orange"><b>IMPORTANT:</b></font> Once the container is built, the Nginx server block serves at port 80 to `/var/www/public`. For Frameworks project, this `./platform/nginx-nodejs/docker/config/nginx/conf.d/default.conf` must be set properly to serve static or SSR container port.
-
-There is a `.env.example` file with the variables required to build the container by `docker-compose.yml` file to create the container if no GNU Make is available on developer's machine. Otherwise, it is not required to create its `.env` manually file for building the container. API environment: `./platform/nginx-nodejs/docker/.env`
 ```bash
 COMPOSE_PROJECT_LEAD="myproj"
 COMPOSE_PROJECT_CNET="mp-dev"
@@ -78,13 +79,7 @@ COMPOSE_PROJECT_USER="myproj"
 COMPOSE_PROJECT_GROUP="myproj"
 ```
 
-But with GNU Make:
-<div style="with:100%;height:auto;text-align:center;">
-    <img src="./resources/docs/images/make-webapp-set.jpg">
-</div>
-<br>
-
-Create the root `./.env` file from the [./.env.example](./.env.example) and follow its description to configure the platforms. The end result would be like this:
+<span style="color: green;"><b>Using GNU Make</b></span> from root directory to configure the container environment, create the root `./.env` file from the [./.env.example](./.env.example) and follow its variables description to set the correct values. The end result would be like this:
 ```bash
 SUDO=sudo
 DOCKER=sudo docker
@@ -140,12 +135,51 @@ $ make webapp-create
 </div>
 <br>
 
+<span color="orange"><b>IMPORTANT:</b></span> Once the container is built and running, the Nginx server block serves at port 80 proxing to port 3000 to be handled by NodeJS. On first installation will fail as it is needing to install the required packages with NPM from inside the container.
+
+<div style="with:100%;height:auto;text-align:center;">
+    <img src="./resources/docs/images/test-containers-failed.jpg">
+</div>
+<br>
+
+To preview the successful installation on browser, there is a basic home page sample at `./resources/docs/webapp/default-install/`. Copy its content into `./webapp` directory
+```bash
+$ cp -a ./resources/docs/webapp/default-install/. ./webapp
+```
+
+Then, access into the container to install require NodeJS packages and restart the container
+```bash
+$ make webapp-ssh
+
+/var/www $ npm install
+/var/www $ exit
+
+$ make webapp-restart
+```
+<div style="with:100%;height:auto;text-align:center;">
+    <img src="./resources/docs/images/test-containers-installation.jpg">
+</div>
+<br>
+
+Now you can see on browser the NodeJS application running
+<div style="with:100%;height:auto;text-align:center;">
+    <img src="./resources/docs/images/test-containers-success.jpg">
+</div>
+<br>
+
 Docker information of both cointer up and running
 <div style="with:100%;height:auto;text-align:center;">
     <img src="./resources/docs/images/docker-ps-a.jpg">
 </div>
 <div style="with:100%;height:auto;text-align:center;">
     <img src="./resources/docs/images/docker-stats.jpg">
+</div>
+<br>
+
+Also there is a **useful GNU Make recipe** to see the container relevant information. This is important when is developing on dev mode inside the container, when for this example, you would see the framework development stage on Docker port, e.g. `http://172.18.0.2:8080` - *NOT ON YOUR MACHINE LOCALHOST*
+
+<div style="with:100%;height:auto;text-align:center;">
+    <img src="./resources/docs/images/make-webapp-info.jpg">
 </div>
 <br>
 
@@ -169,36 +203,81 @@ This streamlines the workflow for managing the container with mnemonic recipe na
 </div>
 <br>
 
-## <a id="external-repository"></a>Use platform with existing repository
+## <a id="external-repository"></a>Use this Platform Repository with an existing web application repository
 
-Remove the ./webapp directory with the default installation content from from local and git cache.
+Here’s a step-by-step guide for both alternatives, assuming you want to:
 
-Install a working repository into webapp directory. There are two alternatives to manage both platform and webapp repository independetely
+- Remove the existing `./webapp` directory and its contents from local and git cache
+- Install your desired repository inside `./webapp`
+- Choose between Git submodule and detached repository approaches
+<br>
 
-### Web application as git sub-module
+## Managing the `webapp` Directory: Submodule vs Detached Repository
 
-With this method, developers can only commit changes from inside the container, and push them into remote version control service. The container must have the keys to access and modify remote repository.
-```bash
-$ git rm -r ./webapp
-$ git clean -fd
-$ git reset --hard
-$ rm -rfv ./webapp/*
-$ rm -rfv ./webapp/.*
-$ git add sub-module git@[vcs]:[account]/[repository].git ./webapp
-```
+To remove the `./webapp` directory with the default installation content and install your desired repository inside it, there are two alternatives for managing both the platform and webapp repositories independently:
 
-### Web application as detached repository *(recommended)*
+### 1. **GIT Sub-module**
 
-The advantage of this method is that developers can commit changes from inside and outside the container, and push them into remote version control service.
-```bash
-$ git rm -r ./webapp
-$ git clean -fd
-$ git reset --hard
-$ rm -rfv ./webapp/*
-$ rm -rfv ./webapp/.*
-$ cd ./webapp
-$ git clone git@[vcs]:[account]/[repository].git .
-```
+> Git commands can be executed **only from inside the container**.
+
+- Remove `webapp` from local and git cache:
+  ```bash
+  $ rm -rfv ./webapp/* ./webapp/.[!.]*$
+  $ git rm -r --cached webapp
+  $ git commit -m "Remove webapp directory and its default installation"
+  ```
+
+- Add the desired repository as a submodule:
+  ```bash
+  $ git submodule add git@[vcs]:[account]/[repository].git ./webapp
+  $ git commit -m "Add webapp as a git submodule"
+  ```
+
+- To update submodule contents:
+  ```bash
+  $ cd ./webapp
+  $ git pull origin main  # or desired branch
+  ```
+
+- To initialize/update submodules after `git clone`:
+  ```bash
+  $ git submodule update --init --recursive
+  ```
+
+---
+
+### 2. **GIT Detached Repository (Recommended)**
+
+> Git commands can be executed **whether from inside the container or on the local machine**.
+
+- Remove `webapp` from local and git cache:
+  ```bash
+  $ rm -rfv ./webapp/* ./webapp/.[!.]*
+  $ git rm -r --cached webapp
+  $ git clean -fd
+  $ git reset --hard
+  $ git commit -m "Remove webapp directory and its default installation"
+  ```
+
+- Clone the desired repository as a detached repository:
+  ```bash
+  $ git clone git@[vcs]:[account]/[repository].git ./webapp
+  ```
+
+- The `webapp` directory is now an **independent repository**, not tracked as a submodule in your main repo. You can use `git` commands freely inside `webapp` from anywhere.
+
+---
+
+#### **Summary Table**
+
+| Approach         | Repo independence | Where to run git commands | Use case                        |
+|------------------|------------------|--------------------------|----------------------------------|
+| Submodule        | Tracked by main  | Inside container         | Main repo controls webapp version|
+| Detached (rec.)  | Fully independent| Local or container       | Maximum flexibility              |
+
+---
+
+> After switching to either alternative, consider adding `webapp/` to your `.gitignore` in the main repo to prevent accidental tracking (especially for detached repo).
 
 <!-- FOOTER -->
 <br>

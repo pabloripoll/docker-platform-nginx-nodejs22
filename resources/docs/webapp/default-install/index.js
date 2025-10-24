@@ -1,20 +1,30 @@
+const express = require('express');
+const http = require('http');
+const os = require('os');
+
+const PORT = process.env.PORT || 3000;
+
+const nodeVersion = process.version;
+const platform = os.platform();
+
+const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>NodeJS HTML</title>
-    <link rel="icon" type="image/x-icon" href="https://nodejs.org/static/logos/nodejsHex.svg">
+    <title>Node HTML</title>
+    <link rel="icon" type="image/x-icon" href="https://nodejs.org/static/images/logo.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="NodeJS HTML">
+    <meta name="description" content="Node HTML">
     <style>
     :root {
         color-scheme: light dark;
         --light-bg: ghostwhite;
         --light-color: darkslategray;
-        --light-code: tomato;
+        --light-code: rgb(0, 209, 59);
         --dark-bg: rgb(30, 30, 30);
         --dark-color: ghostwhite;
-        --dark-code: gold;
+        --dark-code: rgb(0, 209, 59);
     }
     * {
         background-color: light-dark(var(--light-bg), var(--dark-bg));
@@ -30,7 +40,7 @@
         color: light-dark(var(--light-code), var(--dark-code));
     }
     svg {
-        margin: 20px auto;
+        margin: 40px auto 10px auto;
     }
     </style>
 </head>
@@ -85,8 +95,18 @@
         </defs>
     </svg>
     <header>
-        <h1>PLATFORM <span>WEBAPP</span></h1>
+        <h1>PLATFORM <span>WEBAPP</span> - Node ${nodeVersion} (${platform})</h1>
     </header>
-    <p>Docker container is running succesfully and serving plain <span>HTML5</span> script on <code>./public</code> folder.</p>
+    <p>Container is running successfully and serving sample <span>HTML5</span> index page through <code>./index.js</code> script.</p>
 </body>
 </html>
+`;
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+  res.end(html);
+});
+
+server.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
