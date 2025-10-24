@@ -112,7 +112,7 @@ endif
 .PHONY: info ssh build up dev start stop restart clear destroy
 
 info: ## shows container information
-	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" - WEBADM: "${C_GRN}"$(DOCKER_PLTF)"${C_END};
+	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}": "${C_GRN}"$(DOCKER_PLTF)"${C_END};
 	printf ${C_YEL}"Container ID.: "${C_END}; $(DOCKER) ps -aqf "name=^$(DOCKER_CONTAINER)$$"; printf "%s";
 	echo ${C_YEL}"Name.........: "${C_END}$(DOCKER_CONTAINER);
 	echo ${C_YEL}"Image........: "${C_END}"$(DOCKER_CONTAINER):$(DOCKER_IMGK)";
