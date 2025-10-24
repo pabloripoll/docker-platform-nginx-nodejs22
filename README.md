@@ -18,7 +18,7 @@ Additionally, the platform can be run locally with multiple instances to support
 - [Requirements](#requirements)
 - [Platform Features](#platform-features)
 - [Container Environment Settings](#setup-containers)
-- [Create Docker Container](#create-containers)
+- [Build and run the Web Application Container](#create-containers)
 - [GNU Make file recipes](#make-help)
 - [Use this Platform Repository with an existing web application repository](#external-repository)
 <br><br>
@@ -48,6 +48,7 @@ It can be installed the most known JS **front-end** frameworks:
 - [React](https://react.dev/)
 - [Vue3](https://vuejs.org/)
 - [Svelte](https://svelte.dev/)
+- Others...
 <br>
 
 Take into account that each framework will demand its specific configuration from inside container.
@@ -63,7 +64,7 @@ Take into account that each framework will demand its specific configuration fro
 
 Inside `./platform/nginx-nodejs` there are a dedicated GNU Make file and the main Docker directory with the required scripts and stack assets in the `./platform/nginx-nodejs/docker/config` directory to build the required platform configuration. Otherwise, it is not required to create its `.env` manually file for building the container.
 
-> **Note**: There is a `.env.example` file with the variables required to build the container by `docker-compose.yml` file to create the container if no GNU Make is available on developer's machine. Otherwise, it is not required to create its `.env` manually file for building the container. API environment: `./platform/nginx-nodejs/docker/.env`
+> **Note**: There is a `.env.example` file with the variables required to build the container by `docker-compose.yml` file to create the container if no GNU Make is available on developer's machine. Otherwise, it is not required to create its `.env` manually file for building the container. web app environment: `./platform/nginx-nodejs/docker/.env`
 
 ```bash
 COMPOSE_PROJECT_LEAD="myproj"
@@ -107,7 +108,7 @@ WEBAPP_DOMAIN=
 
 Once the environment file is set, create each Docker environment file by the automated commands using GNU Make:
 
-Set up the API container
+Set up the web application container
 ```bash
 $ make webapp-set
 ```
@@ -115,7 +116,7 @@ $ make webapp-set
     <img src="./resources/docs/images/make-webapp-set.jpg">
 </div>
 
-Watch the local hostname IP on which Docker serves and the ports assigned, even though the API can be accessed through `http://127.0.0.1` or `http://localhost`
+Watch the local hostname IP on which Docker serves and the ports assigned, even though the web app can be accessed through `http://127.0.0.1` or `http://localhost`
 ```bash
 $ make local-hostname
 ```
@@ -124,9 +125,9 @@ $ make local-hostname
 </div>
 <br>
 
-## <a id="create-containers"></a>Create and Start Docker Container
+## <a id="create-containers"></a>Build and run the Web Application Container
 
-Create and start up the API container
+Create and start up the web app container
 ```bash
 $ make webapp-create
 ```
@@ -185,7 +186,7 @@ Also there is a **useful GNU Make recipe** to see the container relevant informa
 
 Despite the container can be stop or restarted, it can be stop and destroy to clean up locally from Docker generated cache, without affecting other containers running on the same machine.
 ```bash
-$ yes | make webapp-destroy
+$ make webapp-destroy
 ```
 <div style="with:100%;height:auto;text-align:center;">
     <img src="./resources/docs/images/make-webapp-destroy.jpg">
