@@ -24,7 +24,6 @@ RUN addgroup -S --gid ${GID} ${GROUP} \
     && echo "${USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Install main packages and remove default server definition
-# Install main packages and remove default server definition
 RUN apk add --no-cache \
   openrc \
   curl \
@@ -41,9 +40,6 @@ RUN apk add --no-cache \
 # Configure NGINX and remove created its default html directory
 COPY config/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY config/nginx/conf.d /etc/nginx/conf.d/
-
-# Configure nginx - default server
-#COPY config/conf.d /etc/nginx/conf.d/
 
 # Configure Supervisord
 COPY config/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
