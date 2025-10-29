@@ -135,6 +135,15 @@ $ make local-hostname
 
 ## <a id="create-containers"></a>Build and run the Web Application Container
 
+For custom configurations, there is a `./platform/nginx-nodejs/docker/config/supervisor/conf.d-sample` directory with **Supervisord** services. Copy the main two services required for the **webapp** container startup.
+```bash
+$ cd ./platform/nginx-nodejs/docker/config/supervisor
+$ cp conf.d-sample/nginx.conf conf.d-sample/index.conf conf.d/
+$ ls -l ./conf.d
+-rw-rw-r-- 1 user user 193 Oct 03 18:50 index.conf
+-rw-rw-r-- 1 user user 201 Oct 03 18:50 nginx.conf
+```
+
 Create and start up the web app container
 ```bash
 $ make webapp-create
@@ -144,7 +153,7 @@ $ make webapp-create
 </div>
 <br>
 
-<span color="orange"><b>IMPORTANT:</b></span> Once the container is built and running, the Nginx server block serves at port 80 proxing to port 3000 to be handled by NodeJS. On first installation will fail as it is needing to install the required packages with NPM from inside the container.
+<span color="orange"><b>IMPORTANT:</b></span> Once the container is built and running, the Nginx server block serves at port 80 proxing to port 8080 to be handled by NodeJS. On first installation will fail as it is needing to install the required packages with NPM from inside the container.
 
 <div style="with:100%;height:auto;text-align:center;">
     <img src="./resources/docs/images/test-containers-failed.jpg">
@@ -162,8 +171,7 @@ $ make webapp-ssh
 
 /var/www $ npm install
 /var/www $ exit
-
-$ make webapp-restart
+/var/www $ sudo supervisorctl restart index # service that runs node --watch /var/www/index.js
 ```
 <div style="with:100%;height:auto;text-align:center;">
     <img src="./resources/docs/images/test-containers-installation.jpg">
@@ -185,7 +193,7 @@ Docker information of both cointer up and running
 </div>
 <br>
 
-Also there is a **useful GNU Make recipe** to see the container relevant information. This is important when is developing on dev mode inside the container, when for this example, you would see the framework development stage on Docker port, e.g. `http://172.18.0.2:8080` - *NOT ON YOUR MACHINE LOCALHOST*
+Also there is a **useful GNU Make recipe** to see the container relevant information. This is important when project is in **dev mode** inside the container. So, you would see the framework development stage on Docker IP port, e.g. `http://172.18.0.2:3000` - *NOT ON YOUR MACHINE LOCALHOST - 127.0.0.1*
 
 <div style="with:100%;height:auto;text-align:center;">
     <img src="./resources/docs/images/make-webapp-info.jpg">
