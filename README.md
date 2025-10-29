@@ -231,7 +231,7 @@ $ cd docker-platform-nginx-nodejs-22
 Repository directories structure overview:
 ```
 .
-├── webapp (Vue, Angular, Reat, Svelte, etc.)
+├── webapp (Vue, Angular, React, Svelte, etc.)
 │   ├── node_modules
 │   ├── index.js
 │   ├── package.json
@@ -338,7 +338,7 @@ autorestart=false
 startretries=0
 ```
 
-> **Note**: If web application main script is other, remember to modify this file.
+> **Note**: If web application main script is other, remember to modify this file or use the other examples.
 
 > After switching to either alternative, consider adding `/webapp` to your `.gitignore` in this main platform repository to prevent accidental tracking *(especially for detached repository)*.
 
