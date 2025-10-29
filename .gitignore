@@ -27,6 +27,7 @@ dist
 dist-ssr
 *.local
 
+# Repository
 vault
 platform/nginx-nodejs/docker/config/supervisor/conf.d
 resources/database/*
