@@ -28,6 +28,7 @@ dist-ssr
 *.local
 
 vault
+platform/nginx-nodejs/docker/config/supervisor/conf.d
 resources/database/*
 !resources/database/.gitignore
 resources/docs/webapp/project/*
