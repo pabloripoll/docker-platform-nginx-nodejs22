@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const os = require('os');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 const nodeVersion = process.version;
 const platform = os.platform();
